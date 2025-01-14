@@ -2,8 +2,6 @@
 #######################-#-#-#-#-# - RDA PLOTS - #-#-#-#-#-######################
 ################################################################################
 
-setwd("/Users/leahdaloisio/Desktop/16S-analysis")
-
 # Load packages
 library(qiime2R)
 library(vegan)
@@ -199,7 +197,7 @@ dbrda_triplot <- (
 print(dbrda_triplot)
 
 
-### If you're interested to get individual adjusted p values
+### If you're interested in getting individual adjusted p-values
 
 # Test the significance of each term with permutation tests
 wunifrac_dbrda_base_anova_terms <- vegan::anova.cca(wunifrac_dbrda_base, by = "term", permutations = 999)
