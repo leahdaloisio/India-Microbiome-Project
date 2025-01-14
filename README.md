@@ -9,6 +9,7 @@ The purpose of this study was to investigate the impact of immigration to Canada
 3. Indians born in Canada **(Indo-Can)**
 4. Euro-Canadians **(Euro-Can)**
 5. Euro-Immigrants **(Euro-Immigr)**
+
 Both 16S and shotgun sequencing were done on all samples to compare bacterial compositions and the functional potential of their microbiomes. Dietary data and demographic data was also collected and analyzed in Prism (analysis not shown here).
 
 ## Diagram 
