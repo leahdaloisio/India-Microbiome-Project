@@ -1,0 +1,219 @@
+################################################################################
+################################################################################
+###############################   QIIME 2   ####################################
+################################################################################
+################################################################################
+
+##### SESSION INFO #####
+# QIIME 2 Version: 2023.9 
+
+# Activate QIIME 2 environment
+conda activate /opt/homebrew/Caskroom/miniconda/base/envs/qiime2-amplicon-2023.9
+
+################################################################################
+############################# IMPORTING DATA ###################################
+################################################################################
+
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path manifest.txt \ 
+--output-path paired-end-demux.qza \ 
+--input-format PairedEndFastqManifestPhred33V2 
+# input-format is quality control index for paired-end analysis with Illumina
+
+qiime demux summarize \
+--i-data paired-end-demux.qza \ 
+--o-visualization demux.qzv 
+
+################################################################################
+################################ TRIMMING ######################################
+################################################################################
+
+# Download Figaro 
+# This is a tool for optimizing microbiome rRNA gene trimming parameters
+git clone https://github.com/Zymo-Research/figaro.git
+
+# Move into working directory of Figaro
+cd figaro
+cd figaro # there's another "figaro" in the figaro working directory 
+# Move setup.py into the second figaro folder
+
+# Make sure python/pip is properly downloaded (can be python3/pip3 too)
+pip3 install --upgrade pip
+
+# You need bdist_wheel
+python3 setup.py bdist_wheel
+pip3 install --force-reinstall dist/*.whl
+
+# Install python/pip
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+
+# Install wheel, numpy, scipy, matplotlib
+# Use pip3 or pip
+pip install wheel
+conda install -c anaconda numpy 
+pip install scipy
+pip install matplotlib
+
+# Use this command to ensure that python is active, the "--help" will give a 
+# breakdown of commands to use and what they mean
+python figaro.py --help
+
+#-#-# Figaro Template Set-Up #-#-#
+# This is the template for trimming
+figaro -i /path/to/fastq/directory -o /path/to/output/files 
+-a [amplicon length] \
+-f [forward primer length] -r [reverse primer length]
+
+# Run Figaro to determine where you need to trim your forward and reverse reads 
+python figaro.py -i /path/to/fastq/directory -o /path/to/output/files 
+-a 251 -f 31 -r 32
+
+#-#-# Figaro Command #-#-# 
+# Trim reads with figaro 
+python3 figaro.py -i /Users/leahdaloisio/Desktop/16S-analysis/16S-data-reads 
+-o /Users/leahdaloisio/Desktop/Output_Reads-2 -a 251 -f 31 -r 32
+# top values chosen [129, 205]
+
+# The output for this command will be several rows looking at the 
+# "maxExpectedError" for each "trimPosition", choose the top row, which will 
+# tell you the trim position for denoising 
+
+
+################################################################################
+################################# DENOISING ####################################
+################################################################################
+
+# Denoising step using DADA2
+qiime dada2 denoise-paired \ # denoise-paired performs quality filtering,
+# chimera checking, and paired-end read joining, also does stitching for you
+--i-demultiplexed-seqs paired-end-demux.qza \ # use file made in import step
+--p-trunc-len-f 129 \ # cut-off point for forward read determined by figaro 
+--p-trunc-len-r 205 \ # cut-off point for reverse read determined by figaro
+--p-trim-left-f 31 \
+--p-trim-left-r 32 \
+--o-table table.qza \ 
+--o-representative-sequences rep-seqs.qza \
+--o-denoising-stats denoising-stats.qza 
+
+
+################################################################################
+######################### GENERATING TAXONOMY TABLE ############################
+################################################################################
+
+# Install Greengenes2
+pip install q2-greengenes2
+
+# Classify with Greengenes2
+qiime feature-classifier classify-sklearn \
+--i-classifier 2022.10.backbone.full-length.nb.qza \
+--i-reads rep-seqs.qza \
+--o-classification taxonomy-gg2.qza
+
+# Create the taxonomy.qzv for visualization 
+qiime metadata tabulate \
+--m-input-file taxonomy-gg2.qza \
+--o-visualization taxonomy-gg2.qzv
+
+# View summary of DADA2 outputs
+qiime metadata tabulate \
+--m-input-file denoising-stats.qza \
+--o-visualization denoising-stats-summ.qzv
+
+# Generate a tree for phylogenetic diversity analysis
+qiime phylogeny align-to-tree-mafft-fasttree \
+--i-sequences rep-seqs.qza \
+--o-alignment aligned-rep-seqs.qza \
+--o-masked-alignment masked-aligned-rep-seqs.qza \
+--o-tree unrooted-tree.qza \
+--o-rooted-tree rooted-tree.qza
+
+################################################################################
+################################ FILTERING ASVs ################################ 
+################################################################################
+
+qiime feature-table summarize \            
+--i-table table.qza \                               
+--m-sample-metadata-file sample-metadata-full.txt \
+--o-visualization table.qzv 
+
+qiime feature-table tabulate-seqs \
+--i-data rep-seqs.qza \
+--o-visualization rep-seqs.qzv
+
+# Remove the blanks and standards
+qiime feature-table filter-samples \
+--i-table table.qza \
+--m-metadata-file sample-metadata-full.txt \
+--p-where "host_sex = 'NA'" \
+--p-exclude-ids \
+--o-filtered-table table-filtered.qza
+
+# Check to make sure the blanks and standards were removed
+qiime feature-table summarize \
+--i-table table-filtered.qza \
+--m-sample-file sample-metadata-full.txt \
+--o-visualization table-filtered.qzv
+
+# Filter out taxa that are just phyla (unclassified ASVs), and mitochondria and 
+# chloroplasts (contaminant ASVs)
+qiime taxa filter-table \
+--i-table table-filtered.qza \
+--i-taxonomy taxonomy-gg2.qza \
+--p-mode contains \
+--p-include p__ \
+--p-exclude 'p__;,Chloroplast,Mitochondria' \ 
+--o-filtered-table table-filtered-taxa.qza
+
+# Summarize to see if this filter step removed any samples
+qiime feature-table summarize \
+--i-table table-filtered-taxa.qza \
+--m-sample-metadata-file sample-metadata_V5.txt \
+--o-visualization table-filtered-taxa.qzv
+
+# Now filter the rep.seqs.qza based on changes in the table.qza (will need this for BugBase)
+qiime feature-table filter-seqs \
+--i-data rep-seqs.qza \
+--i-table table-filtered-taxa.qza \
+--o-filtered-data rep-seqs-filtered.qza
+
+
+################################################################################
+########################## GENERATING QIIME2 RESULTS ###########################
+################################################################################
+
+# This command is normalizing using the rarefaction curve and setting sampling depth to 12053
+# Bray curtis and wunifac matrices were used create beta diveristy plots in R
+qiime diversity core-metrics-phylogenetic \
+--i-phylogeny rooted-tree.qza \
+--i-table table-filtered-taxa.qza \
+--p-sampling-depth 12053 \
+--m-metadata-file sample-metadata_V5.txt \ 
+--output-dir core-metrics-results_gg2b 
+
+# Create taxa barplots
+qiime taxa barplot \
+--i-table table-filtered-taxa.qza \
+--i-taxonomy taxonomy-gg2.qza \
+--m-metadata-file sample-metadata_V5.txt \
+--o-visualization taxa-bar-plots.qzv
+
+
+################################################################################
+############################ PREP FILES FOR RSTUDIO ############################
+################################################################################
+
+# To use your OTU table (table.qza) in R, you need it to be a tsv file
+
+# STEP 1: export as biom table 
+qiime tools export --input-path table-filtered-taxa.qza --output-path exported 
+# this will automatically export a file called " feature-table.biom "
+
+# STEP 2: now convert into .tsv file 
+biom convert -i exported/feature-table.biom -o feature-table-gg2.tsv --to-tsv # run just this line to get .tsv
+# manually open file and delete out extra header on top row
+
+# Also need to export taxonomy table
+qiime tools export --input-path taxonomy.qza --output-path exported
+# this will automatically export a file called " taxonomy.tsv "
