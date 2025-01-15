@@ -1,3 +1,6 @@
+First, taxonomic classification was conducted using MetaPhlAn4 using script from: https://github.com/biobakery/biobakery/wiki/metaphlan4
+MetaPhlAn taxonomic profile table output was then imported into R for further analysis. 
+
 ################################################################################
 ###############################   R STUDIO  ####################################
 ################################################################################
@@ -13,6 +16,7 @@ library(tidyr)
 library(pheatmap)
 
 # Load data
+# "#CLASS" row removed in table
 data <- read.csv("MPA-raw-6.csv", header=TRUE, row.names=1)
 
 # Convert to phyloseq object (assuming OTU table for simplicity)
