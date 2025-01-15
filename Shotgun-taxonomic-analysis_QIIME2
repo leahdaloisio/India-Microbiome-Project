@@ -61,3 +61,21 @@ qiime taxa barplot \
 --i-taxonomy taxonomy.qza \
 --m-metadata-file sample-metadata_V5.txt \
 --o-visualization taxa-bar-plots-meta-genus.qzv
+
+
+################################################################################
+################################  LEFSE   ######################################
+################################################################################
+
+# One against all 
+lefse_format_input.py MPA-raw-2.txt meta-mpa-2.in -c 1 -u 2 # -o 1000000 I took out this because this is additional normalization scaling factor when you already are using relative abundance
+
+# Run lefse analysis
+lefse_run.py meta-mpa-2.in meta-mpa-2.res -l 3.5 # 3.5 threshold 
+
+# Create visualization 
+lefse_plot_res.py meta-mpa-2-filtered-4.res meta-mpa-2-filtered-4.png --left_space 0.4 --dpi 1200 
+
+# Create cladogram
+lefse_plot_cladogram.py meta-mpa-2-filtered-3.res meta-mpa-2-filtered-2.svg --background_color w --max_lev 7 --clade_sep 10
+
