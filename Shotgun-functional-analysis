@@ -1,0 +1,94 @@
+################################################################################
+#####################  HUMANN - FUNCTIONAL ANALYSIS   ##########################
+################################################################################
+
+# HUMAnN3.6 was run on shotgun data, using script from: https://github.com/biobakery/biobakery/wiki/humann3
+# HUMAnN outputs provided genefamilies, pathabundance, and pathcoverage files 
+
+################################################################################
+###########################  Pathway Abundances   ##############################
+################################################################################
+
+## Collapsing pathabundance table to make unstratified
+df = pd.read_csv("/Users/leahdaloisio/Desktop/Metagenomics/HUMANn/pathabundance/normalized_pathabundance.tsv", sep='\t')
+split_columns = df.iloc[:, 0].str.split('|', expand=True)
+result_df = pd.concat([split_columns, df.iloc[:, 1:]], axis=1)
+result_df.rename(columns={0: 'Pathways'}, inplace=True)
+result_df.rename(columns={1: 'Taxa'}, inplace=True)
+df_dropped = result_df.drop(result_df.columns[1], axis=1)
+for col in df_dropped.columns[1:]:  # assuming the first column is 'Pathway'
+  df_dropped[col] = pd.to_numeric(df_dropped[col], errors='coerce').fillna(0)
+
+aggregated_df = df_dropped.groupby('Pathways').sum() # summing all numeric columns to each unique pathway
+aggregated_df.reset_index(inplace=True)
+aggregated_df.to_csv(csv_file_path, index=False)
+aggregated_df.to_csv(tsv_file_path, index=False, sep='\t')
+
+### LEFSE ###
+
+# Run conda environment where lefse was installed
+conda activate /opt/homebrew/Caskroom/miniconda/base/envs/qiime2-amplicon-2023.9
+
+# One against all 
+lefse_format_input.py aggregated_df-LEFSE.txt aggregated_df-LEFSE.in -c 1 -u 2 -o 1000000
+
+# Run lefse analysis
+lefse_run.py aggregated_df-LEFSE.in normalized_pathabundance_unstratified_LEFSE.res -l 3.0 # 3.0 threshold 
+
+# Pathway abundance LEFSE
+lefse_plot_res.py normalized_pathabundance_unstratified_LEFSE.res normalized_pathabundance_unstratified_LEFSE.png --feature_font_size 6 --width 10 --max_feature_len 100 --left_space 0.5 --dpi 1200
+
+# aggregated_df-LEFSE.txt file was filtered to only include pathways identified as differentially abundant by LEFSE, then this filtered file was imported into MicrobiomeAnalyst to create a heatmap visualization of the relative pathway abundances
+
+################################################################################
+################################  CAZymes  #####################################
+################################################################################
+
+# Get HUMAnN running
+conda activate biobakery3
+humann_test
+
+# Regroup genefamilies table to CAZy
+humann_regroup_table --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/genefamilies_normalized.tsv --custom /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/map_cazy_uniref90.txt  --output CAZymes
+# mapping file obtained from: https://forum.biobakery.org/t/how-to-do-cazy-gene-profiling/2669
+
+### LEFSE ###
+
+# One against all 
+lefse_format_input.py CAZymes_normalized_unstratified-LEFSE.txt CAZymes_normalized_unstratified-LEFSE.in -c 1 -u 2 -o 1000000
+
+# Run lefse analysis
+lefse_run.py CAZymes_normalized_unstratified-LEFSE.in CAZymes_normalized_unstratified-LEFSE.res -l 2.0 # 2.0 threshold 
+
+# Create visualization 
+lefse_plot_res.py CAZymes_normalized_unstratified-LEFSE.res LEFSE-CAZymes-unstratified.png --feature_font_size 6 --width 10 --max_feature_len 100 --left_space 0.2 --dpi 1200
+
+# Make barplots for taxonomic associations with CAZymes
+humann_barplot --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/CAZymes_normalized_stratified-barplots.txt --focal-feature GH10 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/GH10.png
+
+humann_barplot --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/CAZymes_normalized_stratified-barplots.txt --focal-feature GH43 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/GH43.png
+
+humann_barplot --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/CAZymes_normalized_stratified-barplots.txt --focal-feature GH51 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/GH51.png
+
+################################################################################
+###################################  KEGG ######################################
+################################################################################
+
+# Regroup gene families to KEGG
+humann_regroup_table --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/genefamilies_normalized.tsv --groups uniref90_ko --output KEGG
+
+
+### KEGG ###
+
+humann_barplot --input stratified_KEGG_normalized-barplots.txt --focal-feature K00561 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies//KEGG/K00561.png
+
+humann_barplot --input stratified_KEGG_normalized-barplots.txt --focal-feature K18220 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies//KEGG/K18220.png
+
+
+# Get stratified and unstratified tables
+humann_split_stratified_table --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/KEGG_normalized  --output KEGG
+
+humann_split_stratified_table --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/pathabundance/normalized_pathabundance.tsv --output pathabundance-normalized
+
+humann_split_stratified_table --input  /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/CAZy/CAZymes_normalized.txt --output CAZy-normalized-split
+
