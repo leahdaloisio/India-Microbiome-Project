@@ -2,6 +2,9 @@
 ################################   R STUDIO    #################################
 ################################################################################
 
+##### SESSION INFO #####
+# R Version: 4.2.2
+
 # Load required packages 
 library(BiocManager)
 library(phyloseq)
