@@ -212,3 +212,44 @@ biom convert -i exported/feature-table.biom -o feature-table-gg2.tsv --to-tsv # 
 # Also need to export taxonomy table
 qiime tools export --input-path taxonomy.qza --output-path exported
 # this will automatically export a file called " taxonomy.tsv "
+
+################################################################################
+#################################  LEFSE  ######################################
+################################################################################
+
+# Collapse the table.qza to a level (taxonomic level you want)
+qiime taxa collapse \
+--i-table table-filtered-taxa.qza  \
+--o-collapsed-table table-L7.qza \
+--p-level 7 \
+--i-taxonomy taxonomy-gg2.qza
+
+# Calculate relative frequency for the collapsed table (instead of counts you get relative abundance)
+qiime feature-table relative-frequency \
+--i-table table-L7.qza \
+--o-relative-frequency-table lefse-table-L7.qza \
+--output-dir lefse/
+  
+# Export biom file
+qiime tools export \
+--input-path lefse-table-L7.qza \
+--output-path lefse-L7/
+  
+# Convert biom file to a text file (for LeFSe comparison)
+biom convert \
+-i lefse-L7/feature-table.biom \
+-o lefse-table-L7-LAST.txt --header-key "taxonomy" --to-tsv
+
+# One against all 
+lefse_format_input.py lefse_table-4.txt lefse_table-4.in -c 1 -u 2 -o 1000000
+
+# Run lefse analysis
+lefse_run.py  lefse_table-4.in  lefse_table-4.res -l 3.5 # 3.5 threshold
+# edit the names in the .in file to make it as you'd like .. import into excel and change the info to ".in" after
+
+# Create visualization 
+lefse_plot_res.py  NIJ-filtered-9.res  NIJ-filtered.png --left_space 0.4 --dpi 1200 
+
+# Create cladogram 
+lefse_plot_cladogram.py NIJ-filtered.res NIJ-filtered_clad.svg --background_color w --labeled_stop_lev 7 --class_legend_font_size 4
+# couldn't get the legend to appear so did it in Galaxy instead
