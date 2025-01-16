@@ -1,7 +1,5 @@
 ################################################################################
-################################################################################
 ###############################   QIIME 2   ####################################
-################################################################################
 ################################################################################
 
 ##### SESSION INFO #####
@@ -10,9 +8,7 @@
 # Activate QIIME 2 environment
 conda activate /opt/homebrew/Caskroom/miniconda/base/envs/qiime2-amplicon-2023.9
 
-################################################################################
 ############################# IMPORTING DATA ###################################
-################################################################################
 
 qiime tools import \
 --type 'SampleData[PairedEndSequencesWithQuality]' \
@@ -25,9 +21,7 @@ qiime demux summarize \
 --i-data paired-end-demux.qza \ 
 --o-visualization demux.qzv 
 
-################################################################################
 ################################ TRIMMING ######################################
-################################################################################
 
 # Download Figaro 
 # This is a tool for optimizing microbiome rRNA gene trimming parameters
@@ -77,10 +71,7 @@ python3 figaro.py -i /Users/leahdaloisio/Desktop/16S-analysis/16S-data-reads
 
 # The output for this command will be several rows looking at the "maxExpectedError" for each "trimPosition", choose the top row, which will tell you the trim position for denoising 
 
-
-################################################################################
 ################################# DENOISING ####################################
-################################################################################
 
 # Denoising step using DADA2
 qiime dada2 denoise-paired \ # denoise-paired performs quality filtering,chimera checking, and paired-end read joining, also does stitching for you
@@ -93,10 +84,7 @@ qiime dada2 denoise-paired \ # denoise-paired performs quality filtering,chimera
 --o-representative-sequences rep-seqs.qza \
 --o-denoising-stats denoising-stats.qza 
 
-
-################################################################################
 ######################### GENERATING TAXONOMY TABLE ############################
-################################################################################
 
 # Install Greengenes2
 pip install q2-greengenes2
@@ -125,9 +113,7 @@ qiime phylogeny align-to-tree-mafft-fasttree \
 --o-tree unrooted-tree.qza \
 --o-rooted-tree rooted-tree.qza
 
-################################################################################
 ################################ FILTERING ASVs ################################ 
-################################################################################
 
 qiime feature-table summarize \            
 --i-table table.qza \                               
@@ -173,10 +159,7 @@ qiime feature-table filter-seqs \
 --i-table table-filtered-taxa.qza \
 --o-filtered-data rep-seqs-filtered.qza
 
-
-################################################################################
 ########################## GENERATING QIIME2 RESULTS ###########################
-################################################################################
 
 # This command is normalizing using the rarefaction curve and setting sampling depth to 12053
 # Bray curtis and wunifac matrices were used create beta diveristy plots in R
@@ -194,10 +177,7 @@ qiime taxa barplot \
 --m-metadata-file sample-metadata_V5.txt \
 --o-visualization taxa-bar-plots.qzv
 
-
-################################################################################
 ############################ PREP FILES FOR RSTUDIO ############################
-################################################################################
 
 # To use your OTU table (table.qza) in R, you need it to be a tsv file
 
@@ -213,9 +193,7 @@ biom convert -i exported/feature-table.biom -o feature-table-gg2.tsv --to-tsv # 
 qiime tools export --input-path taxonomy.qza --output-path exported
 # this will automatically export a file called " taxonomy.tsv "
 
-################################################################################
 #################################  LEFSE  ######################################
-################################################################################
 
 # Collapse the table.qza to a level (taxonomic level you want)
 qiime taxa collapse \
