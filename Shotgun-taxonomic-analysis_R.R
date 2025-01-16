@@ -1,5 +1,14 @@
 First, taxonomic classification was conducted using MetaPhlAn4 using script from: https://github.com/biobakery/biobakery/wiki/metaphlan4
-FOR EACH SAMPLE: kneaddata --input R1.fastq.gz --input R2.fastq.gz --threads 40 --processes 40  --reference-db kneaddata_databasepath  --output OUTPUTPATH--max-memory 2000m --remove-intermediate-output --trimmomatic /home/raminka/.local/bin/Trimmomatic-0.39  --trimmomatic-options 'SLIDINGWINDOW:4:25  HEADCROP:10 MINLEN:60 CROP:120' 
+
+FOR EACH SAMPLE:
+# Trimming, removing contaminants (human DNA)
+kneaddata --input R1.fastq.gz --input R2.fastq.gz --threads 40 --processes 40  --reference-db kneaddata_databasepath  --output OUTPUTPATH--max-memory 2000m --remove-intermediate-output --trimmomatic /home/raminka/.local/bin/Trimmomatic-0.39  --trimmomatic-options 'SLIDINGWINDOW:4:25  HEADCROP:10 MINLEN:60 CROP:120' 
+# R1.fastq.gz AND R2.fastq.gz are the forward and reverse reads, respectively.
+
+# Metaphlan for taxonomic classification
+metaphlan -t rel_ab_w_read_stats --bowtie2db /scratch/st-spakpour-1/metaphlanDB202103/ trimmed_25_60_10/02-01-Li41560/02-01-Li41560-CAACGTAC_R1_kneaddata_paired_1.fastq,trimmed_25_60_10/02-01-Li41560/02-01-Li41560-CAACGTAC_R1_kneaddata_paired_2.fastq -x mpa_vJan21_CHOCOPhlAnSGB_202103 -s mpa4_trimmed_25_60_10/sams/02-01-Li41560-CAACGTAC_kneaddata.sam.bz2 --bowtie2out mpa4_trimmed_25_60_10/02-01-Li41560-CAACGTAC_kneaddata.bowtie2.bz2 --nproc 40 --input_type fastq --add_viruses --sample_id_key 02-01-Li41560 --unclassified_estimation -o mpa4_trimmed_25_60_10/02-01-Li41560-CAACGTAC_kneaddata.txt
+
+merge_metaphlan_tables.py mpa4_trimmed_25_60_10/*_kneaddata.txt > outputs/abundance_table.txt
 
 MetaPhlAn taxonomic profile table output was then imported into R for further analysis. 
 
