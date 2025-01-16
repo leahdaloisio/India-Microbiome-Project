@@ -5,9 +5,7 @@
 # HUMAnN3.6 was run on shotgun data, using script from: https://github.com/biobakery/biobakery/wiki/humann3
 # HUMAnN outputs provided genefamilies, pathabundance, and pathcoverage files 
 
-################################################################################
 ###########################  Pathway Abundances   ##############################
-################################################################################
 
 ## Collapsing pathabundance table to make unstratified
 df = pd.read_csv("/Users/leahdaloisio/Desktop/Metagenomics/HUMANn/pathabundance/normalized_pathabundance.tsv", sep='\t')
@@ -40,9 +38,7 @@ lefse_plot_res.py normalized_pathabundance_unstratified_LEFSE.res normalized_pat
 
 # aggregated_df-LEFSE.txt file was filtered to only include pathways identified as differentially abundant by LEFSE, then this filtered file was imported into MicrobiomeAnalyst to create a heatmap visualization of the relative pathway abundances
 
-################################################################################
 ################################  CAZymes  #####################################
-################################################################################
 
 # Get HUMAnN running
 conda activate biobakery3
@@ -70,9 +66,7 @@ humann_barplot --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamil
 
 humann_barplot --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/CAZymes_normalized_stratified-barplots.txt --focal-feature GH51 --focal-metadata group --last-metadata group --sort sum metadata --scaling logstack --o /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/GH51.png
 
-################################################################################
 ###################################  KEGG ######################################
-################################################################################
 
 # Regroup gene families to KEGG
 humann_regroup_table --input /Users/leahdaloisio/Desktop/Metagenomics/HUMANn/genefamilies/genefamilies_normalized.tsv --groups uniref90_ko --output KEGG
