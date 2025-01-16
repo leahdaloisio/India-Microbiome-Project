@@ -170,7 +170,6 @@ p_unifrac <- plot_ordination(ps, pcoa_res_unifrac, color = "group") +
 
 print(p_unifrac)
 
-
 # Pairwise PERMANOVA for Weighted UniFrac
 sample_data <- data.frame(sample_data(ps))
 dist_matrix_unifrac <- as.matrix(dist_matrix_unifrac)
@@ -207,11 +206,7 @@ print(results_unifrac)
 # 9     Euro-Can      Indian 49.611215   0.001       0.01
 # 10 Euro-Immigr      Indian 31.565399   0.001       0.01
 
-
-
-################################################################################
-################## ------ PREVOTELLA CLADE ABUNDANCES--------- #################
-################################################################################
+######################## PREVOTELLA CLADE ABUNDANCES ###########################
 
 ###### CALCULATING MEAN ABUNDANCE OF P.COPRI CLADES
 
@@ -254,13 +249,4 @@ pheatmap(data_transposed, cluster_rows = FALSE, cluster_cols = FALSE,
 # Step 7: Print the average abundances for reporting
 print("Average abundances of Prevotella copri clades in different cohorts:")
 print(data_avg)
-
-
-
-
-
-
-
-
-
-
+                   
