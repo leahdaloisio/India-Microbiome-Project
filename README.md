@@ -19,22 +19,25 @@ PENDING: chart of all the analysis
 
 For 16S sequence analysis, the following scripts are uploaded:
 
-### 16S-analysis_QIIME2 ###
+### 16S-taxonomic-analysis_QIIME2 ###
 In this script, paired-end demultiplexed reads were imported into QIIME 2 (Version 2023.9). Quality control was completed with DADA2, which included filtering, chimera removal, dereplication, denoising and merging paired-end reads. For taxonomic classification, the q2-feature-classifer was trained using the GreenGenes2 database (10.28.22). Amplicon sequence variants (ASVs) were filtered for unclassified ASVs and mitochondrial/chloroplast DNA. Using q2-alignment, ASVs were aligned with mafft to construct a phylogeny with fastree via q2-phylogeny. Initial core metric results and taxa bar plots were then generated, then filed were exported for further analysis in R. 
 
-### 16S-analysis_R.R ###
-In this script, alpha and beta diversity metrics were plotted using the core libraries phyloseq, ggplot2, vegan and qiime2R. Additionally, LEFSE analysis in included, along with a sample size calculation based on the Bray Curtis distance matrix. 
+### 16S-taxonomic-analysis_R.R ###
+In this script, alpha and beta diversity metrics were plotted using the core libraries phyloseq, ggplot2, vegan and qiime2R. Additionally, LEFSE analysis is included, along with a sample size calculation based on the Bray Curtis distance matrix. 
 
-### dbRDA-weighted-unifrac.R ### 
+### 16S-dbRDA-weighted-unifrac.R ### 
 In this script, a distance-based redundancy analysis (dbDRA) was done in R using the Weighted UniFrac distance matrix generated from 16S amplicon data in QIIME 2. The purpose of this dbRDA analysis was to understand associations between the distinctions in beta diversity from the taxonomic data with the dietary patterns and baseline characteristics that were significantly different.
 
 
 For shotgun sequence analysis, the following scripts are uploaded:
 
-### Shotgun-analysis_QIIME2 ###
+### Shotgun-taxonomic-analysis_QIIME2 ###
+This script includes the generation of taxa bar plots and LEFSE analysis.
 
-### Shotgun-analysis_R.R ###
+### Shotgun-taxonomic-analysis_R.R ###
+In this script, beta diversity analysis was conducted and plotted using the core libraries of phyloseq, ggplot2, and vegan. _Prevotella copri_ clade abundances were also calculated to generate a heatmap. 
 
-
+### Shotgun-functional-analysis.R ###
+In this script, HUMAnN outputs were analyzed. Using LEfSe, differential analysis was conducted to compare abundances of MetaCyc pathways, CAZymes and KEGG modules across cohorts. Barplots were also generated on the stratified CAZy and KEGG data to identify taxonomic contributions for differentially abundant gene families. 
 
 
