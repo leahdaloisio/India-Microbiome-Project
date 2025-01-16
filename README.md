@@ -32,7 +32,7 @@ In this script, a distance-based redundancy analysis (dbDRA) was done in R using
 For shotgun sequence analysis, the following scripts are uploaded:
 
 ### Shotgun-taxonomic-analysis_QIIME2 ###
-This script includes the generation of taxa bar plots and LEFSE analysis.
+This script includes the intial taxonomic classiciation of raw shotgun sequence reads with MetaPhlAn4, along with quality control steps including trimming and removal of contaminants (human reads). Taxa bar plots were generated and LEFSE analysis was completed.
 
 ### Shotgun-taxonomic-analysis_R.R ###
 In this script, beta diversity analysis was conducted and plotted using the core libraries of phyloseq, ggplot2, and vegan. _Prevotella copri_ clade abundances were also calculated to generate a heatmap. 
