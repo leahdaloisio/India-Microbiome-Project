@@ -40,12 +40,6 @@ qiime tools import \
 --input-path taxonomy.tsv \
 --output-path taxonomy.qza
 
-qiime taxa barplot \
---i-table otu-table.qza \
---i-taxonomy taxonomy.qza \
---m-metadata-file sample-metadata_V5.txt \
---o-visualization taxa-bar-plots-meta.qzv
-
 # Fix to just for genus filter
 qiime taxa filter-table \
 --i-table otu-table.qza \
