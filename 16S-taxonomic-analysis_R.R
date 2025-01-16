@@ -73,9 +73,7 @@ for (i in 1:nrow(tax.clean)){
   }
 }
 
-################################################################################
 ############################ CREATE PHYLOSEQ FILE ##############################
-################################################################################
 
 # Read in metadata for ps object
 metadata <- read.csv("sample-metadata_V5.csv")
@@ -107,9 +105,7 @@ TREE = read_tree("tree-gg2.nwk")
 # Merge the data into a file called "ps"
 ps <- phyloseq(OTU, TAX, SAMPLE, TREE)
 
-################################################################################
 ########################## ALPHA DIVERSITY ANALYSIS ############################
-################################################################################
 
 # Ensure that 'group' is a factor and set the levels in the desired order
 sample_data(ps)$group <- factor(sample_data(ps)$group, levels = c("Indian", "Indo-Immigr", "Indo-Can", "Euro-Can", "Euro-Immigr"))
@@ -151,17 +147,12 @@ print(plot_pielou)
 
 ## Both Shannon and Pielou's were tested with rarefied data as well, but no major differences were observed
 
-
-################################################################################
 ################################ RAREFACTION ###################################
-################################################################################
 
 set.seed(111) # keep result reproductive
 ps.rarefied = rarefy_even_depth(ps, rngseed=1, sample.size=12053, replace=F) 
 
-################################################################################
 ########################  BETA DIVERSITY WITH ANALYSIS  ########################
-################################################################################
 
 #### Using QIIME2 results here ####
 
@@ -281,9 +272,7 @@ p2 <- ggplot(combined_df2, aes(x = MDS1, y = -MDS2, color = group)) + # negative
 
 print(p2)
 
-################################################################################
 #################################  LEFSE  ######################################
-################################################################################
 
 # Collapse the table.qza to a level (taxonomic level you want)
 qiime taxa collapse \
@@ -320,15 +309,11 @@ lefse_plot_res.py  NIJ-filtered-9.res  NIJ-filtered.png --left_space 0.4 --dpi 1
 
 # Couldn't get the legend to appear for cladogram so did it in Galaxy instead
 
-################################################################################
-##############################  RDA PLOTS   ####################################
-################################################################################ 
+#############################  dbRDA PLOTS   ###################################
 
 # Reference file: dbRDA-weighted-unifrac.R
 
-################################################################################
 ##########################  SAMPLE SIZE CALCULATIONS  ##########################
-################################################################################
 
 ############### Bray Curtis Distance for Sample size Calculation ###############
 
