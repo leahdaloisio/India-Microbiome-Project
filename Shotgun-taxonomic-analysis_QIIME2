@@ -1,14 +1,12 @@
 ################################################################################
-################################################################################
 ###############################   QIIME 2   ####################################
-################################################################################
 ################################################################################
 
 ##### SESSION INFO #####
 # QIIME 2 Version: 2023.9 
 # R Version: 4.2.2
 
-###
+######
 
 ## First export files in R into versions for QIIME 2
 library(phyloseq)
@@ -21,10 +19,9 @@ write.table(otu_matrix, "otu_table.tsv", sep="\t")
 
 write.table(taxonomy_table, "taxonomy.tsv", sep="\t")
 
-
 conda activate /opt/homebrew/Caskroom/miniconda/base/envs/qiime2-amplicon-2023.9
 
-###
+######
 
 # Convert otu table to biom
 biom convert -i otu_table.tsv -o otu-table.biom --to-hdf5
@@ -62,10 +59,7 @@ qiime taxa barplot \
 --m-metadata-file sample-metadata_V5.txt \
 --o-visualization taxa-bar-plots-meta-genus.qzv
 
-
-################################################################################
 ################################  LEFSE   ######################################
-################################################################################
 
 # One against all 
 lefse_format_input.py MPA-raw-2.txt meta-mpa-2.in -c 1 -u 2 # -o 1000000 I took out this because this is additional normalization scaling factor when you already are using relative abundance
