@@ -1,4 +1,6 @@
 First, taxonomic classification was conducted using MetaPhlAn4 using script from: https://github.com/biobakery/biobakery/wiki/metaphlan4
+FOR EACH SAMPLE: kneaddata --input R1.fastq.gz --input R2.fastq.gz --threads 40 --processes 40  --reference-db kneaddata_databasepath  --output OUTPUTPATH--max-memory 2000m --remove-intermediate-output --trimmomatic /home/raminka/.local/bin/Trimmomatic-0.39  --trimmomatic-options 'SLIDINGWINDOW:4:25  HEADCROP:10 MINLEN:60 CROP:120' 
+
 MetaPhlAn taxonomic profile table output was then imported into R for further analysis. 
 
 ################################################################################
