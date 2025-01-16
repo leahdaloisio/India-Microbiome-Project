@@ -15,7 +15,7 @@ Both 16S and shotgun sequencing were done on all samples to compare bacterial co
 ## Diagram 
 PENDING: chart of all the analysis
 
-## How to Use
+## Workflow Scripts
 
 For 16S sequence analysis, the following scripts are uploaded:
 
