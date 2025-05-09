@@ -14,7 +14,7 @@ Both 16S and shotgun sequencing were done on all samples to compare bacterial co
 
 ## Workflow Overview
 Workflow Overview
-<img src="![404440340-05d0fa7e-114d-4769-be62-0f4c249ca133](https://github.com/user-attachments/assets/a4dbaa6d-b6c4-4e0f-9397-0ff17155a052)"
+<img src= "https://github.com/user-attachments/assets/a4dbaa6d-b6c4-4e0f-9397-0ff17155a052)"
  width="70%" height="auto"> 
 
 ## Workflow Scripts
