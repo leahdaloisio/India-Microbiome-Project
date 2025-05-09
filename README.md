@@ -13,7 +13,9 @@ The purpose of this study was to investigate the impact of immigration to Canada
 Both 16S and shotgun sequencing were done on all samples to compare bacterial compositions and the functional potential of their microbiomes. Dietary data and demographic data was also collected and analyzed in Prism (analysis not shown here).
 
 ## Workflow Overview
-![Workflow Overview](images/India-Microbiome-Project_Pipeline-Workflow.png)
+Workflow Overview
+<img src="![404440340-05d0fa7e-114d-4769-be62-0f4c249ca133](https://github.com/user-attachments/assets/a4dbaa6d-b6c4-4e0f-9397-0ff17155a052)"
+ width="70%" height="auto"> 
 
 ## Workflow Scripts
 
